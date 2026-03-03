@@ -307,3 +307,30 @@ CREATE POLICY "Allow all for authenticated" ON reminders FOR ALL USING (auth.rol
 -- Contact submissions: anyone can INSERT (website visitors), only authenticated can SELECT
 CREATE POLICY "Anyone can submit" ON contact_submissions FOR INSERT WITH CHECK (true);
 CREATE POLICY "Authenticated can read" ON contact_submissions FOR SELECT USING (auth.role() = 'authenticated');
+
+-- 16. ISSUES (Dage Problems site)
+CREATE TABLE issues (
+  id BIGSERIAL PRIMARY KEY,
+  subsidiary TEXT NOT NULL,
+  type TEXT NOT NULL DEFAULT 'Problem',
+  priority TEXT NOT NULL DEFAULT 'Medium',
+  subject TEXT NOT NULL,
+  description TEXT NOT NULL,
+  location TEXT,
+  name TEXT,
+  contact TEXT,
+  status TEXT NOT NULL DEFAULT 'Open',
+  response TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE issues ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can submit an issue (anonymous insert)
+CREATE POLICY "Anyone can submit issues" ON issues FOR INSERT WITH CHECK (true);
+-- Anyone can read a single issue by ID (for tracking)
+CREATE POLICY "Anyone can track issues" ON issues FOR SELECT USING (true);
+-- Only authenticated (GM) can update issues (respond, change status)
+CREATE POLICY "Auth can update issues" ON issues FOR UPDATE USING (auth.role() = 'authenticated');
+-- Only authenticated (GM) can delete issues
+CREATE POLICY "Auth can delete issues" ON issues FOR DELETE USING (auth.role() = 'authenticated');
