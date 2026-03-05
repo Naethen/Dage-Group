@@ -3,7 +3,25 @@ import { GraduationCap, CheckSquare, FileText, Users, Plus, CheckCircle, XCircle
 import useSupabase from '../hooks/useSupabase'
 import Toast from '../components/Toast'
 
-const TABS = ['Inspection Checklist', 'Policies', 'Staff Notes']
+const TABS = ['Inspection Checklist', 'School Roster', 'Policies', 'Staff Notes']
+
+const galaxyRoster = {
+  date: '5 Mar 2025',
+  classes: [
+    { name: 'Crèche', students: 18, absent: 4, teachers: ['Margaret Ofori', 'Millicent Serwaa Appiah'] },
+    { name: 'Nursery 1', students: 10, absent: 2, teachers: ['Lilian Bediako'] },
+    { name: 'Nursery 2', students: 11, absent: 2, teachers: ['Christiana Sarpong'] },
+    { name: 'KG1', students: 3, absent: 0, teachers: ['Lilian Asobs'] },
+    { name: 'KG2', students: 4, absent: 0, teachers: ['Juliet Sarfo'] },
+    { name: 'Class 2', students: 1, absent: 0, teachers: ['Lincy Sarfo'] },
+    { name: 'Grade 3', students: 1, absent: 0, teachers: ['Hilda Gyasi (Bismark Osei)'] },
+  ],
+  otherStaff: [
+    { role: 'Administrator', count: 1 },
+    { role: 'Compliance Officer', count: 1, note: 'Bismark Osei — also covering for Hilda Gyasi (maternity leave)' },
+    { role: 'Proprietors', count: 2 },
+  ],
+}
 
 const policies = [
   { id: 1, title: 'Staff Dress Code Policy', school: 'Both Schools', lastUpdated: '2025-01-15', status: 'Active', content: 'All teaching staff must wear the school-approved attire on all weekdays. Smart casual is permitted on Fridays. No open-toe shoes. ID cards must be worn at all times.' },
@@ -152,6 +170,91 @@ export default function SchoolsOps() {
             </div>
           </div>
         )}
+
+        {/* School Roster */}
+        {activeTab === 'School Roster' && (() => {
+          const totalStudents = galaxyRoster.classes.reduce((s, c) => s + c.students, 0)
+          const totalAbsent = galaxyRoster.classes.reduce((s, c) => s + c.absent, 0)
+          const totalTeachers = galaxyRoster.classes.reduce((s, c) => s + c.teachers.length, 0)
+          return (
+            <div>
+              <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                <h2 className="font-bold text-slate-700 text-sm flex items-center gap-2"><Users size={16} /> Dage Galaxy School — Roster</h2>
+                <span className="text-xs text-slate-400">As of {galaxyRoster.date}</span>
+              </div>
+
+              {/* Summary row */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-5">
+                <div className="bg-blue-50 rounded-xl p-3 text-center">
+                  <div className="text-2xl font-extrabold text-blue-700">{totalStudents}</div>
+                  <div className="text-xs text-blue-500">Total Students</div>
+                </div>
+                <div className="bg-amber-50 rounded-xl p-3 text-center">
+                  <div className="text-2xl font-extrabold text-amber-700">{totalAbsent}</div>
+                  <div className="text-xs text-amber-500">Absent</div>
+                </div>
+                <div className="bg-green-50 rounded-xl p-3 text-center">
+                  <div className="text-2xl font-extrabold text-green-700">{totalStudents - totalAbsent}</div>
+                  <div className="text-xs text-green-500">Present</div>
+                </div>
+                <div className="bg-purple-50 rounded-xl p-3 text-center">
+                  <div className="text-2xl font-extrabold text-purple-700">{totalTeachers}</div>
+                  <div className="text-xs text-purple-500">Teaching Staff</div>
+                </div>
+              </div>
+
+              {/* Class breakdown */}
+              <div className="px-5 pb-2">
+                <h3 className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-3">Class Breakdown</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-slate-50">
+                        <th className="text-left px-4 py-2.5 text-xs text-slate-500 font-semibold">Class</th>
+                        <th className="text-center px-4 py-2.5 text-xs text-slate-500 font-semibold">Students</th>
+                        <th className="text-center px-4 py-2.5 text-xs text-slate-500 font-semibold">Absent</th>
+                        <th className="text-center px-4 py-2.5 text-xs text-slate-500 font-semibold">Present</th>
+                        <th className="text-left px-4 py-2.5 text-xs text-slate-500 font-semibold">Teacher(s)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {galaxyRoster.classes.map(cls => (
+                        <tr key={cls.name} className="hover:bg-slate-50">
+                          <td className="px-4 py-3 font-medium text-slate-800">{cls.name}</td>
+                          <td className="px-4 py-3 text-center text-slate-700">{cls.students}</td>
+                          <td className="px-4 py-3 text-center">
+                            {cls.absent > 0
+                              ? <span className="text-amber-600 font-semibold">{cls.absent}</span>
+                              : <span className="text-slate-300">0</span>
+                            }
+                          </td>
+                          <td className="px-4 py-3 text-center text-green-600 font-semibold">{cls.students - cls.absent}</td>
+                          <td className="px-4 py-3 text-slate-600">{cls.teachers.join(', ')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Other Staff */}
+              <div className="px-5 pb-5 pt-2">
+                <h3 className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-3">Other Staff</h3>
+                <div className="space-y-2">
+                  {galaxyRoster.otherStaff.map(s => (
+                    <div key={s.role} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                      <div className="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">{s.count}</div>
+                      <div>
+                        <p className="text-sm font-medium text-slate-700">{s.role}</p>
+                        {s.note && <p className="text-xs text-slate-400">{s.note}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Policies */}
         {activeTab === 'Policies' && (

@@ -43,8 +43,10 @@ export default function Submit() {
     const data = {}
     fd.forEach((v, k) => { data[k] = v })
 
+    const subName = data.school ? `Schools — ${data.school}` : meta.name
+
     const row = {
-      subsidiary: meta.name,
+      subsidiary: subName,
       type: data.type || 'Problem',
       priority: data.priority || 'Medium',
       subject: data.subject,
@@ -159,6 +161,18 @@ export default function Submit() {
                 </select>
               </div>
             </div>
+
+            {/* School Selector (only for schools channel) */}
+            {subsidiary === 'schools' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Which School? *</label>
+                <select name="school" required className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300">
+                  <option value="">Select a school</option>
+                  <option value="Dage Montessori">Dage Montessori</option>
+                  <option value="Dage Galaxy">Dage Galaxy</option>
+                </select>
+              </div>
+            )}
 
             {/* Subject */}
             <div>
