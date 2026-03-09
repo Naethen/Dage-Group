@@ -23,14 +23,7 @@ const galaxyRoster = {
   ],
 }
 
-const policies = [
-  { id: 1, title: 'Staff Dress Code Policy', school: 'Both Schools', lastUpdated: '2025-01-15', status: 'Active', content: 'All teaching staff must wear the school-approved attire on all weekdays. Smart casual is permitted on Fridays. No open-toe shoes. ID cards must be worn at all times.' },
-  { id: 2, title: 'Student Discipline Policy', school: 'Both Schools', lastUpdated: '2025-01-10', status: 'Active', content: 'Student misconduct is handled through a 3-step warning system. Suspension requires head teacher approval. All incidents must be logged in the disciplinary register.' },
-  { id: 3, title: 'Parental Communication Policy', school: 'Both Schools', lastUpdated: '2025-02-01', status: 'Active', content: 'Parents are notified of all academic and behavioural matters within 48 hours. Parent-teacher meetings are held once per term. An emergency contact must be on file for all pupils.' },
-  { id: 4, title: 'Safety & Risk Policy (Pupils)', school: 'Montessori', lastUpdated: '2024-12-05', status: 'Review Due', content: 'Risk assessments for all outdoor activities. Two staff members must accompany any pupil movement outside the classroom. First aid kits must be stocked and accessible.' },
-  { id: 5, title: 'GES Compliance Checklist', school: 'Galaxy', lastUpdated: '2025-02-20', status: 'Active', content: 'Annual GES inspection requirements: updated pupil registers, qualified teacher certifications, school health records, and BECE preparation documentation.' },
-  { id: 6, title: 'SSNIT & GRA Compliance', school: 'Both Schools', lastUpdated: '2025-03-01', status: 'Active', content: 'Monthly SSNIT contributions must be paid by the 14th of each month. GRA filing is quarterly. All staff must be registered with their respective tax IDs.' },
-]
+const policies = []
 
 const categoryColors = {
   'Ambience': 'bg-blue-100 text-blue-700',

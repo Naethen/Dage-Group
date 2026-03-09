@@ -57,7 +57,7 @@ export default function Dashboard() {
       color: 'bg-blue-100 text-blue-600 border-blue-200',
       metrics: [
         { label: 'Unchecked Items', value: openCheckItems },
-        { label: 'Policy Docs', value: '6' },
+        { label: 'Total Check Items', value: checkItems.length },
       ],
       status: openCheckItems > 5 ? 'Review Needed' : 'On Track',
       statusColor: openCheckItems > 5 ? 'text-amber-600 bg-amber-100' : 'text-green-600 bg-green-100',
@@ -102,7 +102,7 @@ export default function Dashboard() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: 'Active Subsidiaries', value: '7', icon: TrendingUp, color: 'text-blue-600 bg-blue-50' },
+          { label: 'Active Subsidiaries', value: '6', icon: TrendingUp, color: 'text-blue-600 bg-blue-50' },
           { label: 'Trucks on Road', value: String(trucksOnRoute), icon: Truck, color: 'text-orange-600 bg-orange-50' },
           { label: 'Open Action Items', value: String(openActions), icon: AlertCircle, color: 'text-amber-600 bg-amber-50' },
           { label: 'Completed Tasks', value: String(reminders.filter(r => r.done).length), icon: CheckCircle, color: 'text-green-600 bg-green-50' },
