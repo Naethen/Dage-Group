@@ -334,3 +334,54 @@ CREATE POLICY "Anyone can track issues" ON issues FOR SELECT USING (true);
 CREATE POLICY "Auth can update issues" ON issues FOR UPDATE USING (auth.role() = 'authenticated');
 -- Only authenticated (GM) can delete issues
 CREATE POLICY "Auth can delete issues" ON issues FOR DELETE USING (auth.role() = 'authenticated');
+
+-- 17. ACTIVITY LOGS (daily transactions for all subsidiaries)
+CREATE TABLE activity_logs (
+  id BIGSERIAL PRIMARY KEY,
+  subsidiary TEXT NOT NULL,
+  date DATE NOT NULL,
+  category TEXT NOT NULL,
+  description TEXT NOT NULL,
+  quantity INTEGER DEFAULT 1,
+  unit_price DECIMAL(10,2),
+  amount DECIMAL(10,2) NOT NULL DEFAULT 0,
+  payment_method TEXT,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE activity_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all for authenticated" ON activity_logs FOR ALL USING (auth.role() = 'authenticated');
+
+-- 18. DCCU DAILY SHEETS (Credit Union daily balancing)
+CREATE TABLE dccu_daily_sheets (
+  id BIGSERIAL PRIMARY KEY,
+  date DATE NOT NULL,
+  savings DECIMAL(12,2) DEFAULT 0,
+  withdrawals DECIMAL(12,2) DEFAULT 0,
+  net_savings DECIMAL(12,2) DEFAULT 0,
+  physical_cash DECIMAL(12,2) DEFAULT 0,
+  momo_collection DECIMAL(12,2) DEFAULT 0,
+  loan_disbursed DECIMAL(12,2) DEFAULT 0,
+  loan_repayments DECIMAL(12,2) DEFAULT 0,
+  net_loan_balance DECIMAL(12,2) DEFAULT 0,
+  total_income DECIMAL(12,2) DEFAULT 0,
+  total_expenses DECIMAL(12,2) DEFAULT 0,
+  profit_loss DECIMAL(12,2) DEFAULT 0,
+  bank_balance DECIMAL(12,2) DEFAULT 0,
+  momo_line_balance DECIMAL(12,2) DEFAULT 0,
+  total_available DECIMAL(12,2) DEFAULT 0,
+  petty_cash DECIMAL(12,2) DEFAULT 0,
+  operating_cash DECIMAL(12,2) DEFAULT 0,
+  total_shares DECIMAL(12,2) DEFAULT 0,
+  total_loans DECIMAL(12,2) DEFAULT 0,
+  total_members_deposit DECIMAL(12,2) DEFAULT 0,
+  income_breakdown JSONB,
+  expense_breakdown JSONB,
+  bank_details JSONB,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE dccu_daily_sheets ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all for authenticated" ON dccu_daily_sheets FOR ALL USING (auth.role() = 'authenticated');

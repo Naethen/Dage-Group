@@ -1,9 +1,12 @@
-import { useState } from 'react'
-import { Hammer, Plus, MapPin, ShoppingBag, Trash2 } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { Hammer, Plus, MapPin, ShoppingBag, Trash2, Factory, DollarSign, TrendingUp, TrendingDown, ChevronDown } from 'lucide-react'
 import useSupabase from '../hooks/useSupabase'
 import Toast from '../components/Toast'
 
-const TABS = ['Construction Leads', 'Retailer Partners', 'Materials Catalog']
+const TABS = ['Factory', 'Transactions', 'Construction Leads', 'Retailer Partners', 'Materials Catalog']
+
+const emptyProd = { date: new Date().toISOString().split('T')[0], block_size: '6 inch', bags_used: '', blocks_produced: '', notes: '' }
+const emptyTx = { date: new Date().toISOString().split('T')[0], category: 'income', description: '', amount: '', payment_method: 'cash', notes: '' }
 
 const statusColors = {
   'Pending': 'bg-amber-100 text-amber-700',
@@ -17,7 +20,7 @@ const statusColors = {
 }
 
 export default function AmoahTraitsOps() {
-  const [activeTab, setActiveTab] = useState('Construction Leads')
+  const [activeTab, setActiveTab] = useState('Factory')
   const { data: leads, insert: insertLead, update: updateLead, remove: removeLead } = useSupabase('leads', 'at_leads', [])
   const { data: retailers, insert: insertRetailer, update: updateRetailer, remove: removeRetailer } = useSupabase('retailers', 'at_retailers', [])
   const { data: catalog, update: updateMaterial } = useSupabase('materials', 'at_catalog', [])
@@ -26,6 +29,39 @@ export default function AmoahTraitsOps() {
   const [showRetailerForm, setShowRetailerForm] = useState(false)
   const [newLead, setNewLead] = useState({ site: '', contact: '', phone: '', location: '', product: '' })
   const [newRetailer, setNewRetailer] = useState({ name: '', location: '', phone: '', products: '' })
+
+  // Activity logs for AT
+  const { data: allLogs, insert: insertLog, remove: removeLog } = useSupabase('activity_logs', 'at_logs', [])
+  const atLogs = useMemo(() => allLogs.filter(l => l.subsidiary === 'Amoah Traits').sort((a, b) => new Date(b.date) - new Date(a.date)), [allLogs])
+  const factoryLogs = useMemo(() => atLogs.filter(l => l.category === 'production'), [atLogs])
+  const txLogs = useMemo(() => atLogs.filter(l => l.category !== 'production'), [atLogs])
+
+  const [showProdForm, setShowProdForm] = useState(false)
+  const [prodEntry, setProdEntry] = useState({ ...emptyProd })
+  const [showTxForm, setShowTxForm] = useState(false)
+  const [txEntry, setTxEntry] = useState({ ...emptyTx })
+
+  async function addProdEntry() {
+    if (!prodEntry.bags_used) return
+    const row = {
+      subsidiary: 'Amoah Traits', date: prodEntry.date, category: 'production',
+      description: `${prodEntry.block_size} blocks — ${prodEntry.bags_used} bags`,
+      quantity: parseInt(prodEntry.blocks_produced) || 0,
+      amount: 0, payment_method: null,
+      notes: prodEntry.notes || `${prodEntry.block_size}, ${prodEntry.bags_used} bags, ${prodEntry.blocks_produced} blocks`,
+    }
+    const result = await insertLog(row)
+    if (result) { setProdEntry({ ...emptyProd }); setShowProdForm(false); notify('Production entry added') }
+  }
+
+  async function addTxEntry() {
+    if (!txEntry.description || !txEntry.amount) return
+    const row = { subsidiary: 'Amoah Traits', ...txEntry, amount: parseFloat(txEntry.amount) || 0, quantity: 1, unit_price: null }
+    const result = await insertLog(row)
+    if (result) { setTxEntry({ ...emptyTx }); setShowTxForm(false); notify('Transaction added') }
+  }
+
+  async function deleteLogEntry(id) { await removeLog(id); notify('Entry deleted') }
 
   function notify(msg) { setToast({ visible: true, message: msg }) }
 
@@ -80,24 +116,30 @@ export default function AmoahTraitsOps() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
-          <div className="text-xs text-slate-500 mb-1">Total Leads</div>
-          <div className="text-2xl font-extrabold text-slate-800">{leads.length}</div>
-        </div>
-        <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
-          <div className="text-xs text-slate-500 mb-1">Converted</div>
-          <div className="text-2xl font-extrabold text-green-600">{leads.filter(l => l.status === 'Converted').length}</div>
-        </div>
-        <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
-          <div className="text-xs text-slate-500 mb-1">Active Retailers</div>
-          <div className="text-2xl font-extrabold text-slate-800">{retailers.filter(r => r.status === 'Active').length}</div>
-        </div>
-        <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
-          <div className="text-xs text-slate-500 mb-1">Products Listed</div>
-          <div className="text-2xl font-extrabold text-slate-800">{catalog.length}</div>
-        </div>
-      </div>
+      {(() => {
+        const totalIncome = txLogs.filter(l => l.category === 'income').reduce((s, l) => s + (parseFloat(l.amount) || 0), 0)
+        const totalExpense = txLogs.filter(l => l.category === 'expense').reduce((s, l) => s + (parseFloat(l.amount) || 0), 0)
+        return (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+              <div className="text-xs text-slate-500 mb-1">Production Entries</div>
+              <div className="text-2xl font-extrabold text-slate-800">{factoryLogs.length}</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+              <div className="text-xs text-green-500 mb-1">Total Income</div>
+              <div className="text-xl font-extrabold text-green-600">GH₵ {totalIncome.toFixed(2)}</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+              <div className="text-xs text-red-500 mb-1">Total Expenses</div>
+              <div className="text-xl font-extrabold text-red-600">GH₵ {totalExpense.toFixed(2)}</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+              <div className="text-xs text-slate-500 mb-1">Net</div>
+              <div className={`text-xl font-extrabold ${totalIncome - totalExpense >= 0 ? 'text-green-600' : 'text-red-600'}`}>GH₵ {(totalIncome - totalExpense).toFixed(2)}</div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Tabs */}
       <div className="flex gap-1 bg-slate-100 p-1 rounded-xl overflow-x-auto">
@@ -110,6 +152,169 @@ export default function AmoahTraitsOps() {
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+
+        {/* Factory Production */}
+        {activeTab === 'Factory' && (
+          <div>
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="font-bold text-slate-700 text-sm flex items-center gap-2"><Factory size={16} /> Foase/Boko Block Factory — Production Log</h2>
+              <button onClick={() => setShowProdForm(!showProdForm)} className="flex items-center gap-1 text-xs bg-amber-500 text-white px-3 py-1.5 rounded-lg hover:bg-amber-600">
+                <Plus size={13} /> Add Entry
+              </button>
+            </div>
+            {showProdForm && (
+              <div className="p-5 border-b border-slate-100 bg-amber-50">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Date</label>
+                    <input type="date" value={prodEntry.date} onChange={e => setProdEntry({...prodEntry, date: e.target.value})}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Block Size</label>
+                    <select value={prodEntry.block_size} onChange={e => setProdEntry({...prodEntry, block_size: e.target.value})}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300">
+                      <option value="5 inch">5 inch</option>
+                      <option value="6 inch">6 inch</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Bags Used</label>
+                    <input type="number" placeholder="0" value={prodEntry.bags_used} onChange={e => setProdEntry({...prodEntry, bags_used: e.target.value})}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Blocks Produced</label>
+                    <input type="number" placeholder="0" value={prodEntry.blocks_produced} onChange={e => setProdEntry({...prodEntry, blocks_produced: e.target.value})}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                  </div>
+                  <div className="flex items-end">
+                    <button onClick={addProdEntry} className="w-full bg-amber-500 text-white rounded-lg px-3 py-2 text-sm font-semibold hover:bg-amber-600">Save</button>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 border-b border-slate-100">
+                  <tr>
+                    {['Date', 'Block Size', 'Bags Used', 'Blocks Produced', 'Notes', ''].map(h => (
+                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-500">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {factoryLogs.length === 0 ? (
+                    <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400 text-sm">No production entries yet</td></tr>
+                  ) : factoryLogs.map(l => {
+                    const parts = (l.notes || '').split(', ')
+                    const size = parts[0] || '—'
+                    const bags = parts[1] || '—'
+                    const blocks = l.quantity || '—'
+                    return (
+                      <tr key={l.id} className="border-b border-slate-50 hover:bg-slate-50">
+                        <td className="px-4 py-3 text-slate-600 text-xs">{new Date(l.date + 'T00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}</td>
+                        <td className="px-4 py-3 font-medium text-slate-700">{size}</td>
+                        <td className="px-4 py-3 text-slate-700">{bags}</td>
+                        <td className="px-4 py-3 font-bold text-slate-800">{blocks}</td>
+                        <td className="px-4 py-3 text-slate-400 text-xs">{l.description}</td>
+                        <td className="px-4 py-3"><button onClick={() => deleteLogEntry(l.id)} className="text-slate-300 hover:text-red-500"><Trash2 size={13} /></button></td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Transactions */}
+        {activeTab === 'Transactions' && (
+          <div>
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="font-bold text-slate-700 text-sm flex items-center gap-2"><DollarSign size={16} /> Income & Expenses</h2>
+              <button onClick={() => setShowTxForm(!showTxForm)} className="flex items-center gap-1 text-xs bg-amber-500 text-white px-3 py-1.5 rounded-lg hover:bg-amber-600">
+                <Plus size={13} /> Add Transaction
+              </button>
+            </div>
+            {showTxForm && (
+              <div className="p-5 border-b border-slate-100 bg-amber-50">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Date</label>
+                    <input type="date" value={txEntry.date} onChange={e => setTxEntry({...txEntry, date: e.target.value})}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Type</label>
+                    <select value={txEntry.category} onChange={e => setTxEntry({...txEntry, category: e.target.value})}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300">
+                      <option value="income">Income</option>
+                      <option value="expense">Expense</option>
+                      <option value="payment">Payment Out</option>
+                      <option value="invoice">Invoice</option>
+                    </select>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs text-slate-500 mb-1">Description</label>
+                    <input placeholder="e.g. Cement sales, Loading guys pay" value={txEntry.description} onChange={e => setTxEntry({...txEntry, description: e.target.value})}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Amount (GH₵)</label>
+                    <input type="number" step="0.01" placeholder="0.00" value={txEntry.amount} onChange={e => setTxEntry({...txEntry, amount: e.target.value})}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Payment Method</label>
+                    <select value={txEntry.payment_method} onChange={e => setTxEntry({...txEntry, payment_method: e.target.value})}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300">
+                      <option value="cash">Cash</option>
+                      <option value="momo">MoMo</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Notes</label>
+                    <input placeholder="Optional" value={txEntry.notes} onChange={e => setTxEntry({...txEntry, notes: e.target.value})}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                  </div>
+                  <div className="flex items-end">
+                    <button onClick={addTxEntry} className="w-full bg-amber-500 text-white rounded-lg px-3 py-2 text-sm font-semibold hover:bg-amber-600">Save</button>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="divide-y divide-slate-50">
+              {txLogs.length === 0 ? (
+                <div className="px-4 py-8 text-center text-slate-400 text-sm">No transactions yet</div>
+              ) : txLogs.map(l => {
+                const isIncome = l.category === 'income'
+                const isExpense = l.category === 'expense' || l.category === 'payment'
+                return (
+                  <div key={l.id} className="px-5 py-3 flex items-center gap-3 hover:bg-slate-50">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isIncome ? 'bg-green-50' : isExpense ? 'bg-red-50' : 'bg-blue-50'}`}>
+                      {isIncome ? <TrendingUp size={15} className="text-green-600" /> : isExpense ? <TrendingDown size={15} className="text-red-600" /> : <DollarSign size={15} className="text-blue-600" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-slate-700 truncate">{l.description}</div>
+                      <div className="text-xs text-slate-400">
+                        {new Date(l.date + 'T00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        {l.notes && <> · {l.notes}</>}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className={`text-sm font-bold ${isIncome ? 'text-green-600' : isExpense ? 'text-red-600' : 'text-blue-600'}`}>
+                        {isExpense ? '-' : '+'}GH₵ {parseFloat(l.amount).toFixed(2)}
+                      </div>
+                      <div className="text-[10px] text-slate-400">{l.payment_method}</div>
+                    </div>
+                    <button onClick={() => deleteLogEntry(l.id)} className="text-slate-300 hover:text-red-500 shrink-0"><Trash2 size={13} /></button>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Construction Leads */}
         {activeTab === 'Construction Leads' && (

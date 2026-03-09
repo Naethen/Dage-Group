@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
-  LayoutDashboard, Truck, Hammer, GraduationCap, Hotel, AlertTriangle,
+  LayoutDashboard, Truck, Hammer, GraduationCap, Hotel, Landmark, AlertTriangle,
   LogOut, Menu, X, ChevronRight, Bell
 } from 'lucide-react'
 
@@ -12,6 +12,7 @@ const navItems = [
   { label: 'Amoah Traits', path: '/ops/amoah-traits', icon: Hammer },
   { label: 'Schools', path: '/ops/schools', icon: GraduationCap },
   { label: 'Nemok Lodge', path: '/ops/nemok-lodge', icon: Hotel },
+  { label: 'Credit Union', path: '/ops/credit-union', icon: Landmark },
   { label: 'Issues', path: '/ops/issues', icon: AlertTriangle },
 ]
 

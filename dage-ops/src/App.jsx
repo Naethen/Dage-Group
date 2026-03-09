@@ -8,6 +8,7 @@ import AmoahTraitsOps from './pages/AmoahTraitsOps'
 import SchoolsOps from './pages/SchoolsOps'
 import NemokOps from './pages/NemokOps'
 import IssuesOps from './pages/IssuesOps'
+import CreditUnionOps from './pages/CreditUnionOps'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth()
@@ -33,6 +34,7 @@ function App() {
             <Route path="ops/amoah-traits" element={<AmoahTraitsOps />} />
             <Route path="ops/schools" element={<SchoolsOps />} />
             <Route path="ops/nemok-lodge" element={<NemokOps />} />
+            <Route path="ops/credit-union" element={<CreditUnionOps />} />
             <Route path="ops/issues" element={<IssuesOps />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

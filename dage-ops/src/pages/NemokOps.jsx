@@ -1,9 +1,18 @@
-import { useState } from 'react'
-import { Hotel, Plus, CheckCircle, Star, Bed } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { Hotel, Plus, CheckCircle, Star, Bed, DollarSign, Trash2, ChevronDown } from 'lucide-react'
 import useSupabase from '../hooks/useSupabase'
 import Toast from '../components/Toast'
 
-const TABS = ['Occupancy', 'Hospitality Standards', 'Notes']
+const TABS = ['Occupancy', 'Revenue Log', 'Hospitality Standards', 'Notes']
+
+const revCatColors = {
+  accommodation: 'bg-blue-100 text-blue-700',
+  food: 'bg-amber-100 text-amber-700',
+  drinks: 'bg-purple-100 text-purple-700',
+  expense: 'bg-red-100 text-red-700',
+}
+
+const emptyEntry = { date: new Date().toISOString().split('T')[0], category: 'accommodation', description: '', quantity: 1, unit_price: '', amount: '', payment_method: 'cash', notes: '' }
 
 const roomStatusColors = {
   'Occupied': 'bg-blue-100 text-blue-700',
@@ -49,6 +58,32 @@ export default function NemokOps() {
   async function toggleNote(id) {
     const n = notes.find(n => n.id === id)
     if (n) { await updateNote(id, { resolved: !n.resolved }); notify('Note status updated') }
+  }
+
+  // Revenue log
+  const { data: allLogs, insert: insertLog, remove: removeLog } = useSupabase('activity_logs', 'nl_revenue', [])
+  const lodgeLogs = useMemo(() => allLogs.filter(l => l.subsidiary === 'Nemok Lodge').sort((a, b) => new Date(b.date) - new Date(a.date)), [allLogs])
+  const [showRevForm, setShowRevForm] = useState(false)
+  const [revEntry, setRevEntry] = useState({ ...emptyEntry })
+  const [revDateFilter, setRevDateFilter] = useState('')
+
+  async function addRevEntry() {
+    if (!revEntry.description || !revEntry.amount) return
+    const row = { subsidiary: 'Nemok Lodge', ...revEntry, amount: parseFloat(revEntry.amount) || 0, quantity: parseInt(revEntry.quantity) || 1, unit_price: parseFloat(revEntry.unit_price) || null }
+    const result = await insertLog(row)
+    if (result) { setRevEntry({ ...emptyEntry }); setShowRevForm(false); notify('Entry added') }
+  }
+
+  async function deleteRevEntry(id) { await removeLog(id); notify('Entry deleted') }
+
+  const filteredLogs = revDateFilter ? lodgeLogs.filter(l => l.date === revDateFilter) : lodgeLogs
+  const revDates = [...new Set(lodgeLogs.map(l => l.date))].sort((a, b) => b.localeCompare(a))
+
+  function revTotals(entries) {
+    const cash = entries.filter(e => e.payment_method === 'cash' && e.category !== 'expense').reduce((s, e) => s + (parseFloat(e.amount) || 0), 0)
+    const momo = entries.filter(e => e.payment_method === 'momo' && e.category !== 'expense').reduce((s, e) => s + (parseFloat(e.amount) || 0), 0)
+    const exp = entries.filter(e => e.category === 'expense').reduce((s, e) => s + (parseFloat(e.amount) || 0), 0)
+    return { cash, momo, exp, net: cash + momo - exp }
   }
 
   const occupied = rooms.filter(r => r.status === 'Occupied').length
@@ -142,6 +177,127 @@ export default function NemokOps() {
             </div>
           </div>
         )}
+
+        {/* Revenue Log */}
+        {activeTab === 'Revenue Log' && (() => {
+          const allTotals = revTotals(filteredLogs)
+          return (
+            <div>
+              <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center gap-3">
+                <h2 className="font-bold text-slate-700 text-sm flex items-center gap-2"><DollarSign size={16} /> Daily Revenue & Expenses</h2>
+                <div className="flex items-center gap-2 ml-auto">
+                  <select value={revDateFilter} onChange={e => setRevDateFilter(e.target.value)}
+                    className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-300">
+                    <option value="">All Dates</option>
+                    {revDates.map(d => <option key={d} value={d}>{new Date(d + 'T00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</option>)}
+                  </select>
+                  <button onClick={() => setShowRevForm(!showRevForm)} className="flex items-center gap-1 text-xs bg-amber-500 text-white px-3 py-1.5 rounded-lg hover:bg-amber-600">
+                    <Plus size={13} /> Add Entry
+                  </button>
+                </div>
+              </div>
+
+              {/* Totals bar */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-5 bg-slate-50 border-b border-slate-100">
+                <div className="text-center"><div className="text-xs text-green-500">Cash</div><div className="text-lg font-bold text-green-700">GH₵ {allTotals.cash.toFixed(2)}</div></div>
+                <div className="text-center"><div className="text-xs text-blue-500">MoMo</div><div className="text-lg font-bold text-blue-700">GH₵ {allTotals.momo.toFixed(2)}</div></div>
+                <div className="text-center"><div className="text-xs text-red-500">Expenses</div><div className="text-lg font-bold text-red-600">GH₵ {allTotals.exp.toFixed(2)}</div></div>
+                <div className="text-center"><div className="text-xs text-slate-500">Net</div><div className="text-lg font-bold text-slate-800">GH₵ {allTotals.net.toFixed(2)}</div></div>
+              </div>
+
+              {/* Add form */}
+              {showRevForm && (
+                <div className="p-5 border-b border-slate-100 bg-amber-50">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1">Date</label>
+                      <input type="date" value={revEntry.date} onChange={e => setRevEntry({...revEntry, date: e.target.value})}
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1">Category</label>
+                      <select value={revEntry.category} onChange={e => setRevEntry({...revEntry, category: e.target.value})}
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300">
+                        <option value="accommodation">Accommodation</option>
+                        <option value="food">Food</option>
+                        <option value="drinks">Drinks</option>
+                        <option value="expense">Expense</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs text-slate-500 mb-1">Description</label>
+                      <input placeholder="e.g. Rm 10 - Mr Gyasi (1 night)" value={revEntry.description} onChange={e => setRevEntry({...revEntry, description: e.target.value})}
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1">Qty</label>
+                      <input type="number" value={revEntry.quantity} onChange={e => setRevEntry({...revEntry, quantity: e.target.value})}
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1">Amount (GH₵)</label>
+                      <input type="number" step="0.01" placeholder="0.00" value={revEntry.amount} onChange={e => setRevEntry({...revEntry, amount: e.target.value})}
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1">Payment</label>
+                      <select value={revEntry.payment_method} onChange={e => setRevEntry({...revEntry, payment_method: e.target.value})}
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300">
+                        <option value="cash">Cash</option>
+                        <option value="momo">MoMo</option>
+                      </select>
+                    </div>
+                    <div className="flex items-end">
+                      <button onClick={addRevEntry} className="w-full bg-amber-500 text-white rounded-lg px-3 py-2 text-sm font-semibold hover:bg-amber-600">Save</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Entries grouped by date */}
+              <div className="p-5 space-y-4">
+                {filteredLogs.length === 0 ? (
+                  <p className="text-center text-slate-400 text-sm py-6">No entries yet</p>
+                ) : (
+                  revDates.filter(d => !revDateFilter || d === revDateFilter).map(date => {
+                    const dayEntries = filteredLogs.filter(l => l.date === date)
+                    const dayTotals = revTotals(dayEntries)
+                    return (
+                      <div key={date} className="border border-slate-100 rounded-xl overflow-hidden">
+                        <div className="bg-slate-50 px-4 py-2.5 flex items-center justify-between">
+                          <span className="text-xs font-semibold text-slate-600">
+                            {new Date(date + 'T00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+                          </span>
+                          <span className="text-xs font-bold text-slate-700">Net: GH₵ {dayTotals.net.toFixed(2)}</span>
+                        </div>
+                        <div className="divide-y divide-slate-50">
+                          {dayEntries.map(entry => (
+                            <div key={entry.id} className="px-4 py-2.5 flex items-center gap-3 hover:bg-slate-50">
+                              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${revCatColors[entry.category] || 'bg-slate-100 text-slate-500'}`}>
+                                {entry.category}
+                              </span>
+                              <span className="flex-1 text-sm text-slate-700 truncate">{entry.description}</span>
+                              <span className={`text-sm font-semibold ${entry.category === 'expense' ? 'text-red-600' : 'text-slate-800'}`}>
+                                {entry.category === 'expense' ? '-' : ''}GH₵ {parseFloat(entry.amount).toFixed(2)}
+                              </span>
+                              <span className="text-[10px] text-slate-400 w-10">{entry.payment_method}</span>
+                              <button onClick={() => deleteRevEntry(entry.id)} className="text-slate-300 hover:text-red-500"><Trash2 size={13} /></button>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="bg-slate-50 px-4 py-2 flex items-center gap-4 text-xs">
+                          <span className="text-green-600">Cash: GH₵ {dayTotals.cash.toFixed(2)}</span>
+                          <span className="text-blue-600">MoMo: GH₵ {dayTotals.momo.toFixed(2)}</span>
+                          {dayTotals.exp > 0 && <span className="text-red-600">Exp: GH₵ {dayTotals.exp.toFixed(2)}</span>}
+                        </div>
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Hospitality Standards */}
         {activeTab === 'Hospitality Standards' && (
