@@ -1,0 +1,8 @@
+Date (YYYY-MM-DD),Savings Received (GHS),Withdrawals (GHS),Net Savings (GHS),Physical Cash Collected (GHS),MoMo Collection (GHS),Loans Disbursed (GHS),Loan Repayments (GHS),Net Loan Balance (GHS),Total Income (GHS),Total Expenses (GHS),Profit/Loss (GHS),Bank Balance (GHS),MoMo Line Balance (GHS),Total Available (GHS),Petty Cash (GHS),Operating Cash (GHS),Total Shares (GHS),Total Loans Outstanding (GHS),Total Members Deposit (GHS),Notes
+INSTRUCTIONS: Fill in one row per day. This is the DCCU Daily Balancing Sheet.,,,,,,,,,,,,,,,,,,,,
+"All amounts should be numbers only. no GHC symbol, no commas.",,,,,,,,,,,,,,,,,,,,
+Net Savings = Savings - Withdrawals,,,,,,,,,,,,,,,,,,,,
+Profit/Loss = Total Income - Total Expenses,,,,,,,,,,,,,,,,,,,,
+Total Available = Bank Balance + MoMo Line Balance,,,,,,,,,,,,,,,,,,,,
+Examples below; be sure to delete and replace with real data:,,,,,,,,,,,,,,,,,,,,
+05/03/2026,17155,22580,-5425,15005,2150,0,6425,868802.7,1334,270,1064,103581.34,5.1,103586.44,2,103588.44,93094,868802.7,975849.75,Approval for GHS 30000 withdrawal for operations

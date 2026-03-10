@@ -1,0 +1,10 @@
+Room Number,Room Type,Rate Per Night (GHS),Current Status,Current Guest Name,Check-in Date,Check-out Date,Notes
+,,,,,,,INSTRUCTIONS: List every room in the lodge. One row per room.
+,,,,,,,"Room Type examples: Standard, Deluxe, Executive Suite, Family Room"
+,,,,,,,"Status options: Available, Occupied, Cleaning, Maintenance"
+,,,,,,,Dates format: YYYY-MM-DD (e.g. 2026-03-09)
+,,,,,,,Leave Guest/Check-in/Check-out blank if room is not occupied
+,,,,,,,Examples below; be sure to delete and replace with real data:
+7,Standard,350,Available,,,,
+10,Deluxe,400,Occupied,Mr Gyasi,05/03/2026,07/03/2026,Regular guest
+12,Suite,700,Available,,,,

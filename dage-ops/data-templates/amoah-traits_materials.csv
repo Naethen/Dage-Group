@@ -1,0 +1,17 @@
+Material / Product Name,Unit (e.g. Per Block / Per Bag / Per Trip),Price (GHS),Stock Status
+INSTRUCTIONS: List every product or material Amoah Traits sells or stocks.,,,
+"Stock Status options: In Stock, Low Stock, Out of Stock",,,
+Price should be a number only — no currency symbols.,,,
+Examples below; be sure to delete and replace with real data:,,,
+Sandcrete Blocks (5 inch solid),Per Block,9,In Stock
+Sandcrete Blocks (6 inch hollow),Per Block,,In Stock
+Cement (Retail 50kg bag),Per Bag,,In Stock
+Sharp Sand,Per Trip,,In Stock
+Laterite,Per Trip,,In Stock
+Coarse Gravel,Per Trip,,In Stock
+Iron Rods (12mm),Per Length,,In Stock
+Iron Rods (10mm),Per Length,,In Stock
+Roofing Sheets,Per Sheet,,Low Stock
+Nails (3 inch),Per Kg,,In Stock
+Nails (4 inch),Per Kg,,In Stock
+Binding Wire,Per Roll,,In Stock

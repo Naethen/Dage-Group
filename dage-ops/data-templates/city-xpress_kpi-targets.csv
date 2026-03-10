@@ -1,0 +1,12 @@
+KPI / Performance Metric,Monthly Target Value,Current Value (this month),Unit
+INSTRUCTIONS: List the key performance indicators (KPIs) that City Xpress tracks monthly.,,,
+"Unit examples: trips, GHS, %, litres, hours",,,
+Examples below; be sure to delete and replace with real data:,,,
+Monthly Deliveries Completed,200,,trips
+Monthly Revenue,80000,,GHS
+Fleet Utilisation Rate,90,,% (percentage of fleet in use)
+On-Time Delivery Rate,95,,%
+Average Fuel Cost Per Trip,,,GHS
+Total Fuel Consumption,,,litres
+Customer Complaints (target: below),5,,complaints
+Maintenance Downtime (target: below),3,,days per truck

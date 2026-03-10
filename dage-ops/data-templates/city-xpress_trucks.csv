@@ -1,0 +1,6 @@
+Plate Number,Driver Full Name,Driver Phone Number,Current Status,Current Route,Truck Type/Size,Year of Purchase,Insurance Expiry (YYYY-MM-DD),Roadworthy Expiry (YYYY-MM-DD),Notes
+INSTRUCTIONS: List every truck/vehicle in the City Xpress fleet. One row per vehicle.,,,,,,,,,"Status options: Available, On Route, Maintenance, Grounded"
+Route example: Kumasi to Accra. Write N/A if no current route.,,,,,,,,,"Truck Type examples: Cargo Truck, Pickup, Tipper, Flatbed"
+Examples below — delete and replace with real data:,,,,,,,,,
+GR 1234-22,Kofi Mensah,0241234567,On Route,Accra to Kumasi,Cargo Truck,2022,31/12/2026,15/06/2026,
+GR 5678-21,Yaw Asante,0557654321,Available,N/A,Tipper,2021,01/10/2026,01/08/2026,

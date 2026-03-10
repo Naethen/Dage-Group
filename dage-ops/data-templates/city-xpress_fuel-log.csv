@@ -1,0 +1,6 @@
+Truck Plate Number,Date (YYYY-MM-DD),Litres Filled,Cost (GHS),Fuel Station Name,Fuel Type (Diesel/Petrol),Odometer Reading (km),Notes
+INSTRUCTIONS: Record every fuel purchase for each truck. One row per fill-up.,,,,,,,
+"Cost should be a number only, no currency symbols or commas.",,,,,,,
+Examples below; be sure to delete and replace with real data:,,,,,,,
+GR 1234-22,01/03/2026,120,1440,Total @ Ahensan,Diesel,125000,
+GR 5678-21,02/03/2026,95,1140,Shell @ Adum,Diesel,98000,

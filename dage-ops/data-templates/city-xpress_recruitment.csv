@@ -1,0 +1,7 @@
+Applicant Full Name,Role Applied For,Phone Number,Date Applied (YYYY-MM-DD),Status,Interview Date (YYYY-MM-DD),Interviewer,Notes
+INSTRUCTIONS: List all current job applicants and recent hires for City Xpress.,,,,,,,
+"Status options: Pending, Interviewed, Hired, Rejected",,,,,,,
+"Role examples: Truck Driver, Loading Assistant, Dispatcher, Mechanic, Office Assistant",,,,,,,
+Examples below; be sure to delete and replace with real data:,,,,,,,
+Emmanuel Agyei,Truck Driver,241234567,01/03/2026,Pending,,,Has Class C license
+Joseph Asiedu,Loading Assistant,557654321,02/03/2026,Interviewed,04/03/2026,Mr Mensah,Strong references

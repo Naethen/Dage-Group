@@ -84,19 +84,19 @@ export default function Navbar() {
               )}
             </div>
 
-            <a
-              href="/#about"
-              className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+            <Link
+              to="/about"
+              className={`text-sm font-medium transition-colors ${isActive('/about') ? 'text-gold' : 'text-gray-300 hover:text-white'}`}
             >
               About
-            </a>
+            </Link>
 
-            <a
-              href="/#contact"
+            <Link
+              to="/contact"
               className="text-sm font-medium bg-gold/20 border border-gold/30 text-gold px-4 py-1.5 rounded-full hover:bg-gold hover:text-white transition-colors"
             >
               Contact
-            </a>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -131,12 +131,12 @@ export default function Navbar() {
               {s.name}
             </Link>
           ))}
-          <a href="/#about" onClick={() => setMenuOpen(false)} className="block py-2 text-sm text-gray-300">
+          <Link to="/about" onClick={() => setMenuOpen(false)} className={`block py-2 text-sm ${isActive('/about') ? 'text-gold' : 'text-gray-300'}`}>
             About
-          </a>
-          <a href="/#contact" onClick={() => setMenuOpen(false)} className="block py-2 text-sm text-gray-300">
+          </Link>
+          <Link to="/contact" onClick={() => setMenuOpen(false)} className={`block py-2 text-sm ${isActive('/contact') ? 'text-gold' : 'text-gray-300'}`}>
             Contact
-          </a>
+          </Link>
         </div>
       </div>
     </nav>

@@ -1,0 +1,54 @@
+=========================================================
+  DAGE GROUP — DATA COLLECTION TEMPLATES
+  Instructions for Subsidiary Managers
+=========================================================
+
+Dear Manager,
+
+Please fill in the CSV files for YOUR subsidiary with accurate, current data.
+Each file can be opened in Microsoft Excel or Google Sheets.
+
+IMPORTANT RULES:
+- Do NOT change the column headers (first row).
+- Fill in one row per item.
+- Leave cells blank if you don't have the information yet.
+- Dates should be in the format: YYYY-MM-DD (e.g. 2026-03-09)
+- Currency amounts should be numbers only (no GH₵ symbol, no commas) e.g. 1500.00
+- For Yes/No columns, write TRUE or FALSE
+- Return your completed files to the GM by [DEADLINE DATE].
+
+FILES PER SUBSIDIARY:
+─────────────────────
+
+NEMOK LODGE (Manager: ____________)
+  1. nemok-lodge_rooms.csv           — All room details
+  2. nemok-lodge_standards.csv       — Daily hospitality checklist items
+  3. nemok-lodge_notes.csv           — Current operational notes/issues
+
+AMOAH TRAITS VENTURES (Manager: ____________)
+  1. amoah-traits_materials.csv      — Full product/materials catalog with prices
+  2. amoah-traits_retailers.csv      — Retailer partners list
+  3. amoah-traits_leads.csv          — Current construction site leads
+
+CITY XPRESS (Manager: ____________)
+  1. city-xpress_trucks.csv          — Full fleet register
+  2. city-xpress_fuel-log.csv        — Recent fuel purchases
+  3. city-xpress_payments.csv        — Outstanding and recent client payments
+  4. city-xpress_kpi-targets.csv     — Monthly performance targets
+  5. city-xpress_recruitment.csv     — Current job applicants
+
+SCHOOLS — MONTESSORI & GALAXY (Head Teachers: ____________)
+  1. schools_checklist.csv           — Inspection checklist items per school
+  2. schools_staff-notes.csv         — Staff-related notes and issues
+  3. schools_policies.csv            — Active school policies
+  4. schools_roster.csv              — Class-by-class student & teacher roster
+
+DAGE CREDIT UNION (Manager: ____________)
+  1. credit-union_daily-sheet.csv    — Daily balancing sheet template
+  2. credit-union_income-items.csv   — List of all income line items tracked
+  3. credit-union_expense-items.csv  — List of all expense line items tracked
+
+=========================================================
+Thank you for your cooperation.
+— Dage Group Management
+=========================================================

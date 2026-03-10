@@ -1,0 +1,35 @@
+School,Category,Checklist Item
+INSTRUCTIONS: List every inspection checklist item for each school. One row per item.,,
+"School options: Montessori, Galaxy, Both",,
+"Category options: Ambience, People, Assets, Stakeholders, Academics, Health & Safety",,
+These items will be noted during school inspections.,,
+,,
+Montessori,Ambience,Building exterior ; clean and well-maintained
+Montessori,Ambience,Classrooms ; adequate lighting and ventilation
+Montessori,Ambience,Signage and school branding visible from road
+Montessori,Ambience,Playground area ; safe and hazard-free
+Montessori,Ambience,Compound ; swept and free of litter
+Montessori,People,All staff in correct dress code
+Montessori,People,Student attendance registers up to date
+Montessori,People,Staff welfare ; check-in with head teacher
+Montessori,People,Teacher lesson plans ; prepared and current
+Montessori,Assets,Teaching materials ; adequate stock
+Montessori,Assets,Furniture ; no damaged desks or chairs
+Montessori,Assets,Toilets ; clean and functional
+Montessori,Assets,Water supply ; available and safe for pupils
+Montessori,Stakeholders,Parent-teacher meeting scheduled for term
+Montessori,Stakeholders,GES compliance documents up to date
+Montessori,Academics,Lesson notes up to date
+Montessori,Academics,Term exam results filed
+Montessori,Health & Safety,First aid kit ; stocked and accessible
+Galaxy,Ambience,School gate and perimeter ; secure
+Galaxy,Ambience,Notice boards updated with current info
+Galaxy,Ambience,Assembly grounds ; clean and organised
+Galaxy,Ambience,Classrooms ; adequate lighting and ventilation
+Galaxy,People,Teachers present and on time
+Galaxy,People,Dress code policy enforced uniformly
+Galaxy,Assets,Toilets ; clean and functional
+Galaxy,Assets,Furniture ; desks and chairs in good condition
+Galaxy,Academics,Lesson notes up to date
+Galaxy,Academics,Term exam results filed
+Galaxy,Health & Safety,First aid kit ; stocked and accessible

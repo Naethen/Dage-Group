@@ -306,6 +306,52 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section className="bg-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <span className="text-gold text-sm font-semibold uppercase tracking-widest">What People Say</span>
+            <h2 className="text-4xl font-extrabold text-navy mt-2 mb-4">Trusted by Our Community</h2>
+            <p className="text-gray-500 max-w-2xl mx-auto">
+              Hear from customers, parents, guests, and partners who have experienced the Dage Group difference.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                quote: "Divine Age Montessori has transformed my child's learning experience. The teachers are dedicated and the environment is perfect for young learners.",
+                name: "Mrs. Adwoa Mensah",
+                role: "Parent, Montessori School",
+                color: "border-blue-200 bg-blue-50",
+              },
+              {
+                quote: "Nemok Lodge exceeded our expectations. Clean rooms, friendly staff, and excellent service. We'll definitely be back for our next visit to Kumasi.",
+                name: "Mr. Kwame Asante",
+                role: "Guest, Nemok Lodge",
+                color: "border-amber-200 bg-amber-50",
+              },
+              {
+                quote: "City Xpress has been our reliable logistics partner for over 2 years. On-time deliveries and professional service every time.",
+                name: "Ama Sarpong",
+                role: "Business Owner",
+                color: "border-orange-200 bg-orange-50",
+              },
+            ].map((t, i) => (
+              <div key={i} className={`rounded-2xl p-6 border ${t.color}`}>
+                <div className="flex gap-1 mb-4">
+                  {[1,2,3,4,5].map(s => <Star key={s} size={16} className="text-gold fill-gold" />)}
+                </div>
+                <p className="text-gray-700 text-sm leading-relaxed mb-5 italic">"{t.quote}"</p>
+                <div>
+                  <div className="font-semibold text-navy text-sm">{t.name}</div>
+                  <div className="text-xs text-gray-500">{t.role}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Banner */}
       <section className="bg-navy py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">

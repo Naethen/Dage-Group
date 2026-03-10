@@ -1,0 +1,7 @@
+Reference Code,Client / Company Name,Amount Owed (GHS),Invoice Date (YYYY-MM-DD),Due Date (YYYY-MM-DD),Payment Status,Amount Paid So Far (GHS),Payment Method,Notes
+INSTRUCTIONS: List all outstanding and recent client payments. One row per invoice/payment.,,,,,,,,
+"Status options: Pending, Paid, Overdue, Partial",,,,,,,,
+"Payment Method options: Cash, MoMo, Bank Transfer, Cheque",,,,,,,,
+Examples below; be sure to delete and replace with real data:,,,,,,,,
+CX-001,Accra Retailers Ltd,4500,28/02/2026,15/03/2026,Pending,0,,
+CX-002,Kumasi Wholesale,3200,01/03/2026,14/03/2026,Paid,3200,Bank Transfer,Paid on 10th March
